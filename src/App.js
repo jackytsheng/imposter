@@ -46,5 +46,5 @@ export default () =>
 <Center>
   <CenterSquare>
     {generatePlayer()}
-  </CenterSquare>
+  </CenterSquare>  
 </Center>
