@@ -31,10 +31,10 @@ const PlayerSlot = styled.div`
 
 const generatePlayer = ()=>{
   let renderResult =[];
-
   for (let i = 0; i<PLAYER_COUNT; i++ ){
     renderResult.push(
       <PlayerSlot key = {"player_slot" + i}/>
+      
     )
   }
 
