@@ -20,6 +20,7 @@ const CenterSquare = styled.div`
   flex-wrap:wrap;
   justify-content:center;
   align-items:center;
+  
 `
 
 const PLAYER_COUNT = 10;
