@@ -47,6 +47,7 @@ const generatePlayer = ()=>{
 export default () => 
 <Center>
   <CenterSquare>
+    
     {generatePlayer()}
   </CenterSquare>  
 </Center>
