@@ -30,9 +30,18 @@ const generatePlayer = () => {
   return renderResult;
 };
 
-export default () => 
+const LogOutBtn = styled.button`
+  margin-top:20px;
+  height:30px;
+  width :100px;
+  cursor:pointer;
+`
+
+export default (props) => (
   <Center>
-    <CenterSquare>
-      {generatePlayer()}
-    </CenterSquare>
+    <CenterSquare>{generatePlayer()}</CenterSquare>
+    <LogOutBtn onClick = {props.handleLogOut}>
+      Log Out
+    </LogOutBtn>
   </Center>
+);

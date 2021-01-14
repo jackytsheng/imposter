@@ -6,10 +6,11 @@ const Wrapper = styled.div`
   flex:1;
 `;
 
-export default () => (
+export default ({ chatHistory }) => (
   <Wrapper>
-    <MessageItem author="Jacky" message="Hello World !" bg="dark" />
-    <MessageItem author="Cindy" message="Hello World 2 !" />
+    {chatHistory.map((messageItem, lineNumber) => (
+      <MessageItem key={lineNumber} author={messageItem.username} message={messageItem.message} bg={lineNumber%2 === 0} />
+    ))}
   </Wrapper>
 );
 

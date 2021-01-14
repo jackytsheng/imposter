@@ -14,9 +14,11 @@ class App extends React.Component{
       login:false,
       username: "",
       room: "",
+      chatHistory:[],
     }
     this.setLoginDetail = this.setLoginDetail.bind(this);
     this.sendMessageToServer = this.sendMessageToServer.bind(this);
+    this.handleLogOut = this.handleLogOut.bind(this);
   }
 
   componentDidMount(){
@@ -26,23 +28,41 @@ class App extends React.Component{
     // });
     
   }
+  handleLogOut(){
+    const {username,room} = this.state;
+    console.log(`${username} has logged out room ${room}`);
+    socket.disconnect();
+    this.setState({ login: false, username: "", room: "" });
+  }
   setLoginDetail(username,room){
     this.setState({
       login:true,username,room,
     },this.connectToSocket)
   }
   connectToSocket(){
-    const {username,room} = this.state;
+    let { username, room, chatHistory } = this.state;
+    chatHistory = JSON.parse(JSON.stringify(chatHistory));
     socket.emit("joinRoom", { username, room });
-  
+    socket.on("message", ({username,message}) => {
+      chatHistory.push({ username, message });
+      this.setState({ chatHistory });
+    });
   }
   sendMessageToServer(message){
     console.log("I am sending message to server")
     socket.emit("chatMessage",message);
   }
   render(){
-    const {login} = this.state; 
-    return login ? <Page sendMessageToServer={this.sendMessageToServer} /> : <Login setLoginDetail={this.setLoginDetail}/>
+    const { login, chatHistory } = this.state; 
+    return login ? (
+      <Page
+        sendMessageToServer={this.sendMessageToServer}
+        handleLogOut={this.handleLogOut}
+        chatHistory={chatHistory ? chatHistory : []}
+      />
+    ) : (
+      <Login setLoginDetail={this.setLoginDetail} />
+    );
   }
 }
 
