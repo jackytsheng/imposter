@@ -30,8 +30,11 @@ class MessageForm extends React.Component {
   }
 
   handleSubmit(event) {
-    console.log("Submitted: " + this.state.value);
     event.preventDefault();
+    console.log("Submitted: " + this.state.value);
+    this.props.sendMessageToServer(this.state.value);
+    this.setState({value:""});
+    
   }
 
   render() {
@@ -50,6 +53,6 @@ class MessageForm extends React.Component {
   }
 }
 
-export default () => (
-    <MessageForm/>
+export default (props) => (
+    <MessageForm {...props}/>
 );

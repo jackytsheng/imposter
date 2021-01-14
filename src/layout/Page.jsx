@@ -12,8 +12,9 @@ const PageLayout = styled.div`
 
 `
 
-export default () => 
-  <PageLayout >
-    <GameLobby/>
-    <ChatScreen/>
-  </PageLayout >
+export default (props) => (
+  <PageLayout>
+    <GameLobby {...props}/>
+    <ChatScreen {...props}/>
+  </PageLayout>
+);

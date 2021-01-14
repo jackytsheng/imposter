@@ -13,8 +13,8 @@ const ChatWrapper = styled.div`
 `
 
 
-export default () => 
+export default (props) => 
   <ChatWrapper>
-    <ChatSpace/>
-    <InputField/>
+    <ChatSpace {...props}/>
+    <InputField {...props}/>
   </ChatWrapper>
