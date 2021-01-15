@@ -22,17 +22,19 @@ class App extends React.Component{
   }
 
   componentDidMount(){
-    // socket.on("message", (message) => {
-    //   console.log("connection established");
-    //   console.log("server says:", message);
-    // });
+    socket.on("connect_error", (reason) => {
+      console.log(reason);
+      console.log("navigating back to login page")
+        // the disconnection was initiated by the server, you need to reconnect manually
+        this.handleLogOut();
+    });
     
   }
   handleLogOut(){
     const {username,room} = this.state;
     console.log(`${username} has logged out room ${room}`);
     socket.disconnect();
-    this.setState({ login: false, username: "", room: "" });
+    this.setState({ login: false, username: "", room: "",chatHistory:[] });
   }
   setLoginDetail(username,room){
     this.setState({
@@ -42,6 +44,9 @@ class App extends React.Component{
   connectToSocket(){
     let { username, room, chatHistory } = this.state;
     chatHistory = JSON.parse(JSON.stringify(chatHistory));
+    if(socket.disconnect){
+      socket.open();
+    }
     socket.emit("joinRoom", { username, room });
     socket.on("message", ({username,message}) => {
       chatHistory.push({ username, message });

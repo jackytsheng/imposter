@@ -15,6 +15,7 @@ const CenterSquare = styled.div`
   align-items: center;
 `;
 const PLAYER_COUNT = 10;
+
 const PlayerSlot = styled.div`
   width: 100px;
   height: 50px;

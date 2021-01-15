@@ -21,6 +21,6 @@ const Author = ({name}) => (
 export default ({ message,author,bg }) => (
   <Wrapper bg={bg}>
     <Author name = {author} />
-    {message}
+    &nbsp; {message}
   </Wrapper>
 );
