@@ -7,28 +7,28 @@ const Center = styled.div`
 const CenterSquare = styled.div`
   width: 300px;
   height: 300px;
+  padding:5px;
   border: solid 1px red;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
 `;
-const PLAYER_COUNT = 10;
+
+const MAX_PLAYER_COUNT = 10;
 
 const PlayerSlot = styled.div`
   width: 100px;
-  height: 50px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   border: 1px blue solid;
 `;
 
-const generatePlayer = () => {
-  let renderResult = [];
-  for (let i = 0; i < PLAYER_COUNT; i++) {
-    renderResult.push(<PlayerSlot key={"player_slot" + i} />);
-  }
+const generatePlayer = (playerList) => {
 
-  return renderResult;
+  return playerList.map((playerInfo,i) => <PlayerSlot key={"player_slot" + i}>
+    {playerInfo.username}
+  </PlayerSlot>);
 };
 
 const LogOutBtn = styled.button`
@@ -40,9 +40,7 @@ const LogOutBtn = styled.button`
 
 export default (props) => (
   <Center>
-    <CenterSquare>{generatePlayer()}</CenterSquare>
-    <LogOutBtn onClick = {props.handleLogOut}>
-      Log Out
-    </LogOutBtn>
+    <CenterSquare>{generatePlayer(props.userList)}</CenterSquare>
+    <LogOutBtn onClick={props.handleLogOut}>Log Out</LogOutBtn>
   </Center>
 );

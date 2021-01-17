@@ -15,6 +15,7 @@ class App extends React.Component{
       username: "",
       room: "",
       chatHistory:[],
+      userList:[],
     }
     this.setLoginDetail = this.setLoginDetail.bind(this);
     this.sendMessageToServer = this.sendMessageToServer.bind(this);
@@ -52,18 +53,22 @@ class App extends React.Component{
       chatHistory.push({ username, message });
       this.setState({ chatHistory });
     });
+    socket.on("userList",userList=>{
+      this.setState({userList})
+    })
   }
   sendMessageToServer(message){
     console.log("I am sending message to server")
     socket.emit("chatMessage",message);
   }
   render(){
-    const { login, chatHistory } = this.state; 
+    const { login, chatHistory, userList } = this.state; 
     return login ? (
       <Page
         sendMessageToServer={this.sendMessageToServer}
         handleLogOut={this.handleLogOut}
         chatHistory={chatHistory ? chatHistory : []}
+        userList={userList}
       />
     ) : (
       <Login setLoginDetail={this.setLoginDetail} />
