@@ -17,7 +17,9 @@ class App extends React.Component {
       chatHistory: [],
       userList: [],
       game: "",
-      role:"",
+      role: "",
+      totalSeatNumber: 10,
+      seatsList: [],
     };
     this.setLoginDetail = this.setLoginDetail.bind(this);
     this.sendMessageToServer = this.sendMessageToServer.bind(this);
@@ -76,13 +78,25 @@ class App extends React.Component {
     socket.on("gameChange", (game) => {
       this.setState({ game });
     });
+    socket.on("roomInfo", (roomInfo) => {
+      const { seatsList, totalSeatNumber } = roomInfo;
+      this.setState({ seatsList, totalSeatNumber },()=>console.log(roomInfo));
+    });
   }
   sendMessageToServer(message) {
     console.log("I am sending message to server");
     socket.emit("chatMessage", message);
   }
   render() {
-    const { login, chatHistory, userList ,game,role} = this.state;
+    const {
+      login,
+      chatHistory,
+      userList,
+      game,
+      role,
+      seatsList,
+      totalSeatNumber,
+    } = this.state;
     return login ? (
       <Page
         sendMessageToServer={this.sendMessageToServer}
@@ -91,6 +105,8 @@ class App extends React.Component {
         userList={userList}
         game={game}
         role = {role}
+        seatsList= {seatsList}
+        totalSeatNumber={totalSeatNumber}
         handleChangeGame={this.handleChangeGame}
       />
     ) : (
