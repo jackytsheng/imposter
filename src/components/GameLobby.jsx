@@ -109,7 +109,13 @@ const InputGroupContainer = styled.div`
 `
 
 
-const InputGroup = ({ game, handleChangeGame, handleLogOut, role }) => {
+const InputGroup = ({
+  game,
+  handleChangeGame,
+  handleLogOut,
+  role,
+  handleGameStart,
+}) => {
   return (
     <InputGroupContainer>
       <FormControl variant="outlined">
@@ -120,7 +126,7 @@ const InputGroup = ({ game, handleChangeGame, handleLogOut, role }) => {
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
           value={game}
-          disabled = {role === "player"}
+          disabled={role === "player"}
           label="Select Game"
           onChange={handleChangeGame}
         >
@@ -130,27 +136,28 @@ const InputGroup = ({ game, handleChangeGame, handleLogOut, role }) => {
           <MenuItem value="avalon">Avalon</MenuItem>
         </Select>
       </FormControl>
-      {role === "admin" ? <ButtonGroup color="primary" aria-label="outlined primary button group">
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => console.log("Game Start !")}
-          disabled={!game}
-        >
-          Game Start
-        </Button>
-
-        {game === "imposter" ? (
+      {role === "admin" ? (
+        <ButtonGroup color="primary" aria-label="outlined primary button group">
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => console.log("Game Setting Click !")}
+            onClick={handleGameStart}
+            disabled={!game}
           >
-            Setting
+            Game Start
           </Button>
-        ) : null}
-      </ButtonGroup> : null
-      }
+
+          {game === "imposter" ? (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => console.log("Game Setting Click !")}
+            >
+              Setting
+            </Button>
+          ) : null}
+        </ButtonGroup>
+      ) : null}
 
       <Button variant="outlined" onClick={handleLogOut}>
         Log Out

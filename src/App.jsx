@@ -20,11 +20,14 @@ class App extends React.Component {
       role: "",
       totalSeatNumber: 10,
       seatsList: [],
+      onGame:false,
+      yourTurn:false,
     };
     this.setLoginDetail = this.setLoginDetail.bind(this);
     this.sendMessageToServer = this.sendMessageToServer.bind(this);
     this.handleLogOut = this.handleLogOut.bind(this);
     this.handleChangeGame = this.handleChangeGame.bind(this);
+    this.handleGameStart = this.handleGameStart.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +62,12 @@ class App extends React.Component {
       },
       this.connectToSocket
     );
+  }
+  handleGameStart(){
+    const {room,game} =this.state;
+    console.log("Game Start !");
+    socket.emit("gameStart",{room,game});
+    socket.on("GameOver",()=>{this.setState({ onGame:false,yourTurn:false});})
   }
   connectToSocket() {
     let { username, room, chatHistory } = this.state;
@@ -104,10 +113,11 @@ class App extends React.Component {
         chatHistory={chatHistory ? chatHistory : []}
         userList={userList}
         game={game}
-        role = {role}
-        seatsList= {seatsList}
+        role={role}
+        seatsList={seatsList}
         totalSeatNumber={totalSeatNumber}
         handleChangeGame={this.handleChangeGame}
+        handleGameStart={this.handleGameStart}
       />
     ) : (
       <Login setLoginDetail={this.setLoginDetail} />
