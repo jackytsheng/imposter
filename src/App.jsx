@@ -6,7 +6,6 @@ import Login from './layout/Login';
 const IP = '192.168.0.13'
 const ServerIP = IP || "localhost";
 const socket = io(`http://${ServerIP}:3010`);
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -20,8 +19,9 @@ class App extends React.Component {
       role: "",
       totalSeatNumber: 10,
       seatsList: [],
-      onGame:false,
-      yourTurn:false,
+      isInGame: false,
+      playerTurn: false,
+      userID:"",
     };
     this.setLoginDetail = this.setLoginDetail.bind(this);
     this.sendMessageToServer = this.sendMessageToServer.bind(this);
@@ -37,7 +37,10 @@ class App extends React.Component {
       // the disconnection was initiated by the server, you need to reconnect manually
       this.handleLogOut();
     });
-  }
+    socket.on("disconnect",()=>{
+       this.resetState();
+    })
+  }  
   handleChangeGame(gameChangeEvent){ 
     const game = gameChangeEvent.target.value;
     const {room} = this.state;
@@ -47,11 +50,27 @@ class App extends React.Component {
     }
     this.setState({ game }, SendGameToServer);
   };
+  resetState(){
+    this.setState({
+      login: false,
+      username: "",
+      room: "",
+      chatHistory: [],
+      userList: [],
+      game: "",
+      role: "",
+      totalSeatNumber: 10,
+      seatsList: [],
+      isInGame: false,
+      playerTurn: false,
+      userID: "",
+    });
+  }
   handleLogOut() {
     const { username, room } = this.state;
     console.log(`${username} has logged out room ${room}`);
     socket.disconnect();
-    this.setState({ login: false, username: "", room: "", chatHistory: [] });
+    this.resetState();
   }
   setLoginDetail(username, room) {
     this.setState(
@@ -67,34 +86,59 @@ class App extends React.Component {
     const {room,game} =this.state;
     console.log("Game Start !");
     socket.emit("gameStart",{room,game});
-    socket.on("GameOver",()=>{this.setState({ onGame:false,yourTurn:false});})
+    this.setState({isInGame:true})
+    socket.off("message");
   }
+
   connectToSocket() {
-    let { username, room, chatHistory } = this.state;
+    let { username, room, chatHistory, isInGame } = this.state;
     chatHistory = JSON.parse(JSON.stringify(chatHistory));
     if (socket.disconnect) {
       socket.open();
     }
-    socket.emit("joinRoom", { username, room });
+    socket.on("gameStart",() => {
+      socket.off("message");
+      this.setState({ isInGame: true });
+    }
+    );
+    
     socket.on("message", ({ username, message }) => {
-      chatHistory.push({ username, message });
-      this.setState({ chatHistory });
-    });
+        console.log("I am receiving message ")
+        chatHistory.push({ username, message });  
+        this.setState({ chatHistory })
+      }
+    );
+  
+    socket.emit("joinRoom", { username, room });
+    
     socket.on("userList", (userList) => {
       const {role} = userList.find(user=>user.id === socket.id);
       this.setState({ userList, role });
+    });
+    socket.on("gameMessage", ({ username, seat, message }) => {
+      username = seat? seat + "." + username: username;
+      chatHistory.push({ username, message });
+      this.setState({ chatHistory });
     });
     socket.on("gameChange", (game) => {
       this.setState({ game });
     });
     socket.on("roomInfo", (roomInfo) => {
       const { seatsList, totalSeatNumber } = roomInfo;
-      this.setState({ seatsList, totalSeatNumber },()=>console.log(roomInfo));
+      this.setState({ seatsList, totalSeatNumber, userID: socket.id }, () =>
+        console.log(roomInfo)
+      );
+    });
+    socket.on("GameOver", () => {
+      this.setState({ isInGame: false, playerTurn: false });
     });
   }
   sendMessageToServer(message) {
+    const {isInGame} = this.state;
     console.log("I am sending message to server");
-    socket.emit("chatMessage", message);
+    if(isInGame){
+      socket.emit("gameMessage", message);
+    }else{socket.emit("chatMessage", message);}
   }
   render() {
     const {
@@ -105,6 +149,9 @@ class App extends React.Component {
       role,
       seatsList,
       totalSeatNumber,
+      isInGame,
+      playerTurn,
+      userID,
     } = this.state;
     return login ? (
       <Page
@@ -114,6 +161,9 @@ class App extends React.Component {
         userList={userList}
         game={game}
         role={role}
+        playerTurn={playerTurn}
+        isInGame={isInGame}
+        userID={userID}
         seatsList={seatsList}
         totalSeatNumber={totalSeatNumber}
         handleChangeGame={this.handleChangeGame}

@@ -9,7 +9,7 @@ import {
   ButtonGroup,
 } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faUserPlus,faCrown,faUser} from '@fortawesome/free-solid-svg-icons'
+import {faUserPlus,faCrown,faUser,faGamepad} from '@fortawesome/free-solid-svg-icons'
 
 const MATERIAL_UI_PRIMARY_COLOR = "#4152b6";
 const MATERIAL_UI_GREY_COLOR = "#c4c4c4";
@@ -33,11 +33,12 @@ const PlayerSlot = styled.div`
   margin: 10px 5px;
   height: 30px;
   display: flex;
-  color:${MATERIAL_UI_PRIMARY_COLOR};
+  color: ${MATERIAL_UI_PRIMARY_COLOR};
   justify-content: center;
   align-items: center;
-  border-radius:10px;
-  border:1px solid ${MATERIAL_UI_PRIMARY_COLOR};
+  border-radius: 10px;
+  background: ${(prop) => (prop.bgOn ? "#8341b630" : null)};
+  border: 1px solid ${MATERIAL_UI_PRIMARY_COLOR};
 `;
 const IconContainer = styled.div`
   font-size:16px;
@@ -51,17 +52,17 @@ const NameTag = styled.div`
   flex:1;
 `
 
-const generateSeat = (totalSeat,seatsList)=>{
+const generateSeat = (totalSeat, seatsList, userID) => {
   let seatArray = Array(totalSeat).fill(undefined);
-      seatsList.forEach(seat=>{
-        //seat number is 1 more than index
-        seatArray[seat.seatNumber-1] = seat.player;
-      }
-    )
-  return seatArray.map((playerInfo,i) => {
-    if(playerInfo){
+  seatsList.forEach((seat) => {
+    //seat number is 1 more than index
+    seatArray[seat.seatNumber - 1] = seat.player;
+  });
+  return seatArray.map((playerInfo, i) => {
+    if (playerInfo) {
+      console.log(playerInfo)
       return (
-        <PlayerSlot key={"player_slot" + i}>
+        <PlayerSlot key={"player_slot" + i} bgOn={userID === playerInfo.id}>
           <IconContainer>
             {playerInfo.role === "admin" ? (
               <FontAwesomeIcon icon={faCrown} />
@@ -69,30 +70,30 @@ const generateSeat = (totalSeat,seatsList)=>{
               <FontAwesomeIcon icon={faUser} />
             )}
           </IconContainer>
-          <NameTag>{playerInfo.username}</NameTag>
+          <NameTag>
+            {playerInfo.username}
+          </NameTag>
+          <IconContainer>
+            {playerInfo.isInGame ?  (
+              <FontAwesomeIcon icon={faGamepad} />
+            ) : null}
+          </IconContainer>
         </PlayerSlot>
       );
-    }else{
-       return (
-         <PlayerSlot key={"player_slot" + i}>
-           <IconContainer>
-             <FontAwesomeIcon icon={faUserPlus} />
-           </IconContainer>
-           <NameTag></NameTag>
-         </PlayerSlot>
-       );
+    } else {
+      return (
+        <PlayerSlot key={"player_slot" + i}>
+          <IconContainer>
+            <FontAwesomeIcon icon={faUserPlus} />
+          </IconContainer>
+          <NameTag></NameTag>
+        </PlayerSlot>
+      );
     }
-  })
-}
-
-
-const generatePlayer = (playerList) => {
-
-  return playerList.map((playerInfo,i) => 
-  <PlayerSlot key={"player_slot" + i}>
-    {playerInfo.username + `${playerInfo.role === "admin"?" (admin)":""}`}
-  </PlayerSlot>);
+  });
 };
+
+
 
 
 const InputGroupContainer = styled.div`
@@ -115,6 +116,7 @@ const InputGroup = ({
   handleLogOut,
   role,
   handleGameStart,
+  
 }) => {
   return (
     <InputGroupContainer>
@@ -169,7 +171,7 @@ const InputGroup = ({
 export default (props) => (
   <Center>
     <CenterSquare>
-      {generateSeat(props.totalSeatNumber, props.seatsList)}
+      {generateSeat(props.totalSeatNumber, props.seatsList, props.userID)}
     </CenterSquare>
 
     <InputGroup {...props} />
